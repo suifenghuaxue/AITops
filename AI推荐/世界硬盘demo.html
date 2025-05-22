@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>世界硬盘 - 分布式存储解决方案</title>
+    <style>
+        :root {
+            --primary: #4e44ce;
+            --secondary: #6c63ff;
+            --dark: #1a1a2e;
+            --light: #f5f5f7;
+            --accent: #00d1b2;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏 */
+        header {
+            background-color: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            bottom: -5px;
+            left: 0;
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(78, 68, 206, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 68, 206, 0.4);
+        }
+        
+        /* 英雄区域 */
+        .hero {
+            padding: 180px 0 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(rgba(26, 26, 46, 0.8), rgba(26, 26, 46, 0.8)), 
+                        url('https://images.unsplash.com/photo-1517502884422-41eaead166d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center;
+            background-size: cover;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #fff, var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .secondary-button {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .secondary-button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 209, 178, 0.1);
+        }
+        
+        /* 特性部分 */
+        .features {
+            padding: 100px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .section-title p {
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 30px;
+            transition: transform 0.3s, background 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(0, 209, 178, 0.2);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .feature-icon i {
+            font-size: 24px;
+            color: white;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* 价格部分 */
+        .pricing {
+            padding: 100px 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .price-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .price-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .price-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .price-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .price-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        
+        .price-period {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
+        }
+        
+        .price-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .price-features li {
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* 乡村数字化部分 */
+        .rural {
+            padding: 100px 0;
+        }
+        
+        .rural-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+        
+        .rural-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .rural-text p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+        
+        .rural-image {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .rural-image img {
+            width: 100%;
+            display: block;
+        }
+        
+        /* CTA部分 */
+        .cta {
+            padding: 100px 0;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==');
+            opacity: 0.3;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: white;
+            position: relative;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            color: rgba(255, 255, 255, 0.9);
+            position: relative;
+        }
+        
+        /* 页脚 */
+        footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .rural-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-database" style="margin-right: 10px;"></i>
+                    世界<span>硬盘</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#features">产品特性</a></li>
+                    <li><a href="#pricing">价格方案</a></li>
+                    <li><a href="#rural">乡村数字化</a></li>
+                    <li><a href="#about">关于我们</a></li>
+                    <li><a href="#contact">联系我们</a></li>
+                </ul>
+                <button class="cta-button">开始使用</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section class="hero">
+        <div class="container">
+            <h1>分布式存储的未来已来</h1>
+            <p>世界硬盘基于Web3.0技术，提供安全、高速、低成本的分布式存储解决方案，助力企业降本增效，提升竞争力。存储成本直降60%，能耗仅为传统存储的1/300。</p>
+            <div class="hero-buttons">
+                <button class="cta-button">立即体验</button>
+                <button class="secondary-button">了解更多</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性部分 -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>为什么选择世界硬盘</h2>
+                <p>我们提供革命性的分布式存储解决方案，满足您的数据存储、传输和安全需求</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3>去中心化架构</h3>
+                    <p>数据碎片化分布式存储，改变传统集中式存储易受攻击的弊端，保障数据安全与高可用性。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3>成本效益</h3>
+                    <p>相比传统云存储，我们的分布式存储解决方案可降低60%以上的存储成本，能耗仅为传统方式的1/300。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>数据安全</h3>
+                    <p>采用区块链技术和先进的加密算法，数据碎片化加密存储，确保您的数据隐私和安全。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>高效传输</h3>
+                    <p>基于内容寻址技术，访问速度更快，可在就近节点获取被验证的可信数据，传输效率极高。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <h3>永久存储</h3>
+                    <p>数据永不丢失，自然灾害、服务器毁灭等均不惧怕，实现文件的永久存储能力。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                    <h3>无限扩展</h3>
+                    <p>随着存储需求的增长，可以方便地添加新的节点，动态扩展存储容量和计算能力。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 价格部分 -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-title">
+                <h2>存储价格方案</h2>
+                <p>灵活多样的存储方案，满足不同规模企业的需求</p>
+            </div>
+            <div class="price-cards">
+                <div class="price-card">
+                    <h3>基础存储</h3>
+                    <div class="price-amount">1.6元</div>
+                    <div class="price-period">每GB/年</div>
+                    <ul class="price-features">
+                        <li>标准文件存储</li>
+                        <li>基础带宽调度</li>
+                        <li>冗余存储成本</li>
+                        <li>1080p及以下视频</li>
+                    </ul>
+                    <button class="cta-button">选择方案</button>
+                </div>
+                <div class="price-card">
+                    <h3>高级存储</h3>
+                    <div class="price-amount">3.8元</div>
+                    <div class="price-period">每GB/年</div>
+                    <ul class="price-features">
+                        <li>大文件存储(>10GB)</li>
+                        <li>4K视频存储</li>
+                        <li>优先带宽调度</li>
+                        <li>增强数据安全</li>
+                    </ul>
+                    <button class="cta-button">选择方案</button>
+                </div>
+                <div class="price-card">
+                    <h3>企业定制</h3>
+                    <div class="price-amount">定制</div>
+                    <div class="price-period">专属方案</div>
+                    <ul class="price-features">
+                        <li>8K及以上视频</li>
+                        <li>超高传输需求</li>
+                        <li>私有化部署</li>
+                        <li>专属技术支持</li>
+                    </ul>
+                    <button class="secondary-button">联系销售</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 乡村数字化部分 -->
+    <section class="rural" id="rural">
+        <div class="container">
+            <div class="rural-content">
+                <div class="rural-text">
+                    <h2>助力乡村数字化建设</h2>
+                    <p>世界硬盘致力于将闲置算力资源应用于乡村数字化建设，推动基层经济发展和数字经济融合。通过分布式存储技术，让乡村地区也能参与到数字经济中来。</p>
+                    <p>我们已在多个乡村地区部署存储节点，不仅为当地提供了就业机会，还大幅降低了乡村数字化建设的存储成本，让乡村学校、医院和政府机构能够负担得起高质量的数据存储服务。</p>
+                    <p>人人参与数据存储，人人从中获益。世界硬盘正在改变生产关系，构建更加公平的数字经济生态。</p>
+                    <button class="cta-button">了解乡村计划</button>
+                </div>
+                <div class="rural-image">
+                    <img src="https://images.unsplash.com/photo-1586771107445-d3ca888129ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="乡村数字化">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA部分 -->
+    <section class="cta">
+        <div class="container">
+            <h2>准备好加入存储革命了吗？</h2>
+            <p>无论您是个人用户还是企业客户，世界硬盘都能为您提供安全、高效、低成本的存储解决方案</p>
+            <button class="cta-button" style="background: white; color: var(--primary);">立即注册</button>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>世界硬盘</h3>
+                    <p style="color: rgba(255,255,255,0.6);">基于Web3.0技术的分布式存储平台，提供安全、高效、低成本的存储解决方案。</p>
+                </div>
+                <div class="footer-column">
+                    <h3>产品</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">存储服务</a></li>
+                        <li><a href="#">价格方案</a></li>
+                        <li><a href="#">API文档</a></li>
+                        <li><a href="#">节点部署</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>解决方案</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">企业存储</a></li>
+                        <li><a href="#">乡村数字化</a></li>
+                        <li><a href="#">智慧城市</a></li>
+                        <li><a href="#">AI数据存储</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>公司</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">关于我们</a></li>
+                        <li><a href="#">加入我们</a></li>
+                        <li><a href="#">新闻中心</a></li>
+                        <li><a href="#">媒体报道</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>联系我们</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-envelope" style="margin-right: 8px;"></i> contact@zerogarden.com</a></li>
+                        <li><a href="#"><i class="fas fa-phone" style="margin-right: 8px;"></i> +86 10 8888 8888</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt" style="margin-right: 8px;"></i> 北京市海淀区科技园区88号</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 世界硬盘. 保留所有权利. | <a href="#" style="color: rgba(255,255,255,0.6);">隐私政策</a> | <a href="#" style="color: rgba(255,255,255,0.6);">服务条款</a></p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

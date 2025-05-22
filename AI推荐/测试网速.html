@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极速测试 | 暗黑版</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --secondary: #0088ff;
+            --accent: #ff00aa;
+            --dark: #0a0a12;
+            --darker: #050508;
+            --light: #e0e0e0;
+            --neon-glow: 0 0 10px rgba(0, 240, 255, 0.7), 0 0 20px rgba(0, 240, 255, 0.5);
+            --neon-glow-accent: 0 0 10px rgba(255, 0, 170, 0.7), 0 0 20px rgba(255, 0, 170, 0.5);
+            --radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--darker);
+            min-height: 100vh;
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+            text-shadow: var(--neon-glow);
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .logo:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            box-shadow: var(--neon-glow);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        
+        .logo:hover:after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            color: #aaa;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        
+        .speedtest-card {
+            background: rgba(10, 10, 20, 0.7);
+            border-radius: var(--radius);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            margin-bottom: 40px;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+        
+        .speedtest-card:before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            z-index: -1;
+            border-radius: var(--radius);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        
+        .speedtest-card:hover:before {
+            opacity: 0.3;
+        }
+        
+        .speedtest-card:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0, 240, 255, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        
+        .speedtest-card:hover:after {
+            opacity: 1;
+        }
+        
+        .test-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+        
+        .test-title i {
+            margin-right: 15px;
+            color: var(--accent);
+            text-shadow: var(--neon-glow-accent);
+        }
+        
+        .test-controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 136, 255, 0.4);
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn i {
+            margin-right: 10px;
+        }
+        
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 136, 255, 0.6);
+        }
+        
+        .btn:hover:before {
+            opacity: 1;
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn:disabled:before {
+            opacity: 0;
+        }
+        
+        .test-visual {
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .speedometer-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+        }
+        
+        .speedometer-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #ff0066 0%, 
+                #ff6600 20%, 
+                #ffcc00 40%, 
+                #66ff00 60%, 
+                #00ffcc 80%, 
+                #0066ff 100%
+            );
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 0, 0, 0.8);
+            -webkit-mask: radial-gradient(transparent 60%, black 61%);
+            mask: radial-gradient(transparent 60%, black 61%);
+        }
+        
+        .speedometer-inner {
+            position: absolute;
+            width: 70%;
+            height: 70%;
+            background: var(--dark);
+            border-radius: 50%;
+            top: 15%;
+            left: 15%;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 240, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+        
+        .speedometer-needle {
+            position: absolute;
+            width: 3px;
+            height: 120px;
+            background: var(--light);
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(-90deg);
+            transition: transform 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            z-index: 2;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+        
+        .speedometer-needle:after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: var(--light);
+            border-radius: 50%;
+            bottom: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+        
+        .speed-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+            margin-top: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+            text-shadow: var(--neon-glow);
+            letter-spacing: 2px;
+        }
+        
+        .speed-value.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .speed-unit {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-left: 5px;
+            text-shadow: var(--neon-glow);
+        }
+        
+        .test-details {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        
+        .detail-card {
+            background: rgba(20, 20, 30, 0.7);
+            border-radius: var(--radius);
+            padding: 25px;
+            width: 30%;
+            min-width: 220px;
+            margin: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+            text-align: center;
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .detail-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(0, 240, 255, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        
+        .detail-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+        
+        .detail-card:hover:before {
+            opacity: 1;
+        }
+        
+        .detail-title {
+            font-size: 1.1rem;
+            color: #aaa;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .detail-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: var(--neon-glow);
+            letter-spacing: 2px;
+        }
+        
+        .detail-unit {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-left: 5px;
+            text-shadow: var(--neon-glow);
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            margin: 30px 0;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(0, 240, 255, 0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            border-radius: 6px;
+            width: 0%;
+            transition: width 0.6s ease-out;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+        
+        .progress-bar:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to right, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.8) 50%, 
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shimmer 2s infinite;
+        }
+        
+        .server-selector {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        select {
+            font-family: 'Rajdhani', sans-serif;
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            font-size: 1rem;
+            background: rgba(10, 10, 20, 0.7);
+            color: var(--light);
+            cursor: pointer;
+            transition: var(--transition);
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f0ff'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        select:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+        
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.2), 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+        
+        .history {
+            margin-top: 60px;
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+        
+        .history-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--primary);
+            text-align: center;
+            text-shadow: var(--neon-glow);
+            letter-spacing: 2px;
+        }
+        
+        .history-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .history-item {
+            background: rgba(20, 20, 30, 0.7);
+            border-radius: var(--radius);
+            padding: 20px;
+            width: 180px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+            text-align: center;
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .history-item:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        
+        .history-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+        
+        .history-item:hover:before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        .history-date {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        
+        .history-speed {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: var(--neon-glow);
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        
+        .history-ping {
+            font-size: 0.9rem;
+            color: var(--primary);
+            text-shadow: var(--neon-glow);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            color: #666;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            animation: fadeIn 0.8s ease-out 0.6s both;
+        }
+        
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+            text-shadow: var(--neon-glow);
+        }
+        
+        footer a:hover {
+            color: var(--accent);
+            text-shadow: var(--neon-glow-accent);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .detail-card {
+                width: 100%;
+                margin: 15px 0;
+            }
+            
+            .speedometer-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .speed-value {
+                font-size: 2.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particles" class="particles"></canvas>
+    
+    <div class="container">
+        <header>
+            <div class="logo">SPEEDTEST X</div>
+            <div class="tagline">测试您的极限网速体验</div>
+        </header>
+        
+        <div class="speedtest-card">
+            <div class="server-selector">
+                <select id="serverSelect">
+                    <option value="auto">自动选择最佳服务器</option>
+                    <option value="us">北美节点</option>
+                    <option value="eu">欧洲节点</option>
+                    <option value="asia">亚洲节点</option>
+                    <option value="china">中国节点</option>
+                </select>
+            </div>
+            
+            <div class="test-visual">
+                <div class="speedometer-container">
+                    <div class="speedometer-outer"></div>
+                    <div class="speedometer-inner">
+                        <div class="speedometer-needle" id="needle"></div>
+                    </div>
+                </div>
+                <div class="speed-value" id="speedValue">
+                    <span id="speedNumber">0</span>
+                    <span class="speed-unit">Mbps</span>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="test-controls">
+                <button class="btn" id="startTest">
+                    <i class="fas fa-bolt"></i> 开始极速测试
+                </button>
+            </div>
+            
+            <div class="test-details">
+                <div class="detail-card">
+                    <div class="detail-title">下载速度</div>
+                    <div class="detail-value" id="downloadSpeed">0</div>
+                    <span class="detail-unit">Mbps</span>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-title">上传速度</div>
+                    <div class="detail-value" id="uploadSpeed">0</div>
+                    <span class="detail-unit">Mbps</span>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-title">网络延迟</div>
+                    <div class="detail-value" id="pingTime">0</div>
+                    <span class="detail-unit">ms</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="history">
+            <div class="history-title">测试历史记录</div>
+            <div class="history-items" id="historyItems">
+                <!-- 历史记录将通过JavaScript动态添加 -->
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 SPEEDTEST X | 由 <a href="#">CyberTech</a> 强力驱动</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 粒子背景初始化
+            const canvas = document.getElementById('particles');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // 粒子系统
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 3 + 1;
+                    this.speedX = Math.random() * 2 - 1;
+                    this.speedY = Math.random() * 2 - 1;
+                    this.color = `rgba(0, 240, 255, ${Math.random() * 0.5 + 0.1})`;
+                    this.alpha = Math.random() * 0.5 + 0.1;
+                }
+                
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    
+                    if (this.x > canvas.width || this.x < 0) {
+                        this.speedX = -this.speedX;
+                    }
+                    
+                    if (this.y > canvas.height || this.y < 0) {
+                        this.speedY = -this.speedY;
+                    }
+                }
+                
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+            
+            // 连接线
+            function connectParticles(particles) {
+                for (let a = 0; a < particles.length; a++) {
+                    for (let b = a; b < particles.length; b++) {
+                        const dx = particles[a].x - particles[b].x;
+                        const dy = particles[a].y - particles[b].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            ctx.strokeStyle = `rgba(0, 240, 255, ${1 - distance / 100})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[a].x, particles[a].y);
+                            ctx.lineTo(particles[b].x, particles[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            // 初始化粒子
+            const particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push(new Particle());
+            }
+            
+            // 动画循环
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                }
+                
+                connectParticles(particles);
+                requestAnimationFrame(animateParticles);
+            }
+            
+            animateParticles();
+            
+            // 窗口大小调整
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+            
+            // 速度测试逻辑
+            const startTestBtn = document.getElementById('startTest');
+            const progressBar = document.getElementById('progressBar');
+            const needle = document.getElementById('needle');
+            const speedNumber = document.getElementById('speedNumber');
+            const speedValue = document.getElementById('speedValue');
+            const downloadSpeed = document.getElementById('downloadSpeed');
+            const uploadSpeed = document.getElementById('uploadSpeed');
+            const pingTime = document.getElementById('pingTime');
+            const historyItems = document.getElementById('historyItems');
+            
+            // 模拟测试数据 (实际应用中应替换为真实测试逻辑)
+            function runSpeedTest() {
+                startTestBtn.disabled = true;
+                startTestBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 测试中...';
+                
+                // 重置UI
+                progressBar.style.width = '0%';
+                needle.style.transform = 'translateX(-50%) rotate(-90deg)';
+                speedValue.classList.remove('show');
+                
+                // 添加脉冲动画
+                progressBar.style.animation = 'pulse 1.5s infinite';
+                
+                // 模拟延迟测试
+                setTimeout(() => {
+                    updatePing(Math.floor(Math.random() * 30) + 5);
+                }, 1000);
+                
+                // 模拟下载测试
+                setTimeout(() => {
+                    simulateProgress('download', 0, 500, 15);
+                }, 1500);
+                
+                // 模拟上传测试
+                setTimeout(() => {
+                    simulateProgress('upload', 0, 100, 8);
+                }, 8000);
+            }
+            
+            function simulateProgress(type, current, max, speed) {
+                if (current <= max) {
+                    const progress = (current / max) * 100;
+                    progressBar.style.width = `${progress}%`;
+                    
+                    // 更新速度计
+                    const needleAngle = -90 + (180 * (current / max));
+                    needle.style.transform = `translateX(-50%) rotate(${needleAngle}deg)`;
+                    
+                    // 更新速度显示
+                    speedNumber.textContent = current.toFixed(1);
+                    
+                    if (!speedValue.classList.contains('show')) {
+                        speedValue.classList.add('show');
+                    }
+                    
+                    // 更新具体数值
+                    if (type === 'download') {
+                        downloadSpeed.textContent = current.toFixed(1);
+                    } else {
+                        uploadSpeed.textContent = current.toFixed(1);
+                    }
+                    
+                    // 继续动画
+                    setTimeout(() => {
+                        simulateProgress(type, current + (Math.random() * speed), max, speed);
+                    }, 80);
+                } else {
+                    // 测试完成
+                    if (type === 'upload') {
+                        testComplete();
+                    }
+                }
+            }
+            
+            function updatePing(time) {
+                pingTime.textContent = time;
+            }
+            
+            function testComplete() {
+                startTestBtn.disabled = false;
+                startTestBtn.innerHTML = '<i class="fas fa-sync-alt"></i> 重新测试';
+                progressBar.style.animation = 'none';
+                
+                // 保存测试结果到历史记录
+                addToHistory(
+                    new Date().toLocaleDateString(),
+                    parseFloat(downloadSpeed.textContent),
+                    parseFloat(uploadSpeed.textContent),
+                    parseInt(pingTime.textContent)
+                );
+                
+                // 触发庆祝效果
+                celebrate();
+            }
+            
+            function addToHistory(date, download, upload, ping) {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                historyItem.innerHTML = `
+                    <div class="history-date">${date}</div>
+                    <div class="history-speed">${download.toFixed(1)}</div>
+                    <div class="history-ping">Ping: ${ping}ms</div>
+                `;
+                
+                // 添加动画效果
+                historyItem.style.opacity = '0';
+                historyItem.style.transform = 'translateY(30px)';
+                historyItems.insertBefore(historyItem, historyItems.firstChild);
+                
+                // 触发动画
+                setTimeout(() => {
+                    historyItem.style.transition = 'all 0.5s ease-out';
+                    historyItem.style.opacity = '1';
+                    historyItem.style.transform = 'translateY(0)';
+                }, 10);
+                
+                // 限制历史记录数量
+                if (historyItems.children.length > 5) {
+                    historyItems.removeChild(historyItems.lastChild);
+                }
+            }
+            
+            // 庆祝效果
+            function celebrate() {
+                // 创建粒子爆炸效果
+                for (let i = 0; i < 30; i++) {
+                    createConfetti();
+                }
+            }
+            
+            function createConfetti() {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.borderRadius = '50%';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = '-10px';
+                confetti.style.zIndex = '1000';
+                confetti.style.pointerEvents = 'none';
+                confetti.style.boxShadow = '0 0 10px currentColor';
+                document.body.appendChild(confetti);
+                
+                const animation = confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight + 10}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 2000 + 1000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)'
+                });
+                
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+            
+            // 初始化一些历史记录
+            function initHistory() {
+                const now = new Date();
+                
+                addToHistory(
+                    now.toLocaleDateString(),
+                    452.7,
+                    98.3,
+                    12
+                );
+                
+                addToHistory(
+                    new Date(now - 86400000).toLocaleDateString(),
+                    387.2,
+                    85.6,
+                    15
+                );
+                
+                addToHistory(
+                    new Date(now - 2 * 86400000).toLocaleDateString(),
+                    421.5,
+                    92.1,
+                    18
+                );
+            }
+            
+            // 事件监听
+            startTestBtn.addEventListener('click', runSpeedTest);
+            
+            // 初始化
+            initHistory();
+        });
+    </script>
+</body>
+</html>

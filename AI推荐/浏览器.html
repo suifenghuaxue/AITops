@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyperFrag - Web3.0浏览器扩展系统</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏 */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            margin-left: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        /* 英雄区域 */
+        .hero {
+            background: linear-gradient(135deg, #e0e7ff 0%, #ecfdf5 100%);
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            color: var(--dark);
+        }
+        
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .download-btn {
+            background-color: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .download-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .download-btn i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .coming-soon {
+            position: relative;
+        }
+        
+        .coming-soon::after {
+            content: "即将上线";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: var(--secondary);
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        
+        /* 特性部分 */
+        .features {
+            padding: 80px 0;
+            /* 全局优化 */
+            body {
+                background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+                min-height: 100vh;
+                overflow-x: hidden;
+            }
+            
+            /* 全局动画 */
+            @keyframes float {
+                0%, 100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+            
+            /* 导航栏优化 */
+            header {
+                backdrop-filter: blur(10px);
+                background-color: rgba(255, 255, 255, 0.8);
+            }
+            
+            .nav-links a {
+                position: relative;
+            }
+            
+            .nav-links a::after {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 2px;
+                bottom: -5px;
+                left: 0;
+                background-color: var(--primary);
+                transform: scaleX(0);
+                transition: transform 0.3s ease;
+            }
+            
+            .nav-links a:hover::after {
+                transform: scaleX(1);
+            }
+            
+            /* 英雄区域优化 */
+            .hero {
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .hero::before {
+                content: '';
+                position: absolute;
+                width: 600px;
+                height: 600px;
+                background: radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
+                top: -300px;
+                right: -300px;
+                animation: float 6s ease-in-out infinite;
+            }
+            
+            .hero::after {
+                content: '';
+                position: absolute;
+                width: 600px;
+                height: 600px;
+                background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+                bottom: -300px;
+                left: -300px;
+                animation: float 8s ease-in-out infinite;
+            }
+            
+            /* 粒子效果 */
+            .particles {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+            }
+            
+            .particle {
+                position: absolute;
+                width: 2px;
+                height: 2px;
+                background-color: var(--primary);
+                border-radius: 50%;
+                animation: float 3s ease-in-out infinite;
+            }
+            
+            .particle:nth-child(2n) {
+                background-color: var(--secondary);
+                animation-duration: 4s;
+            }
+            
+            .particle:nth-child(3n) {
+                background-color: var(--gray);
+                animation-duration: 5s;
+            }
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            position: relative;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            background-color: #e0e7ff;
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 32px;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            background-color: white;
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--dark);
+            position: relative;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        .feature-card:hover h3 {
+            color: white;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            position: relative;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        .feature-card:hover p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+
+            .feature-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .feature-card h3 {
+                font-size: 20px;
+            }
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            background-color: #e0e7ff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 24px;
+        }
+        
+        .feature-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        /* 视频对比 */
+        .video-comparison {
+            background-color: var(--dark);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .video-comparison h2 {
+            font-size: 36px;
+            margin-bottom: 40px;
+        }
+
+        .comparison-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .video-card {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+        }
+
+        .video-card h3 {
+            margin: 20px 0;
+            font-size: 24px;
+        }
+
+        .video-placeholder {
+            background-color: #334155;
+            height: 250px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            overflow: hidden;
+        }
+
+        .video-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 应用市场 */
+        .applications {
+            padding: 80px 0;
+        }
+
+        .applications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .app-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .app-card i {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .app-card:hover i {
+            color: var(--secondary);
+        }
+
+        .app-card h4 {
+            font-size: 18px;
+            color: var(--dark);
+            transition: color 0.3s ease;
+        }
+
+        .app-card:hover h4 {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .applications-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .app-card {
+                padding: 20px;
+            }
+
+            .app-card i {
+                font-size: 28px;
+            }
+
+            .app-card h4 {
+                font-size: 16px;
+            }
+        }
+        
+        /* 页脚 */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--light);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-cube"></i>
+                    <span>HyperFrag</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#">节点</a></li>
+                    <li><a href="#">服务器</a></li>
+                    <li><a href="#">存储</a></li>
+                    <li><a href="#">生态</a></li>
+                    <li><a href="#">开发者</a></li>
+                    <li><a href="#">市场</a></li>
+                    <li><a href="#">招标</a></li>
+                    <li><a href="#">智空间</a></li>
+                    <li><a href="#">浏览器</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <div class="container">
+            <h1>Web3.0浏览器扩展系统</h1>
+            <p>基于Web3.0技术支持第三方视频超高清视频传输、播放的技术解决方案</p>
+            
+            <div class="download-buttons">
+                <a href="#" class="download-btn">
+                    <i class="fab fa-windows"></i>
+                    Windows (32位/64位)
+                </a>
+                <a href="#" class="download-btn">
+                    <i class="fab fa-chrome"></i>
+                    插件版
+                </a>
+                <a href="#" class="download-btn">
+                    <i class="fab fa-linux"></i>
+                    Linux
+                </a>
+                <a href="#" class="download-btn">
+                    <i class="fab fa-apple"></i>
+                    macOS
+                </a>
+                <a href="#" class="download-btn coming-soon">
+                    <i class="fab fa-android"></i>
+                    Android
+                </a>
+                <a href="#" class="download-btn coming-soon">
+                    <i class="fab fa-apple"></i>
+                    iOS
+                </a>
+            </div>
+            
+            <div style="max-width: 800px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 10px; text-align: left;">
+                <p><i class="fas fa-check-circle" style="color: var(--secondary); margin-right: 10px;"></i> Windows版：支持Win7、Win8、Win10、Win11等主流Windows操作系统，兼容32位和64位应用程序</p>
+                <p><i class="fas fa-check-circle" style="color: var(--secondary); margin-right: 10px;"></i> 插件版：原生兼容Chromium内核的各类浏览器</p>
+                <p><i class="fas fa-check-circle" style="color: var(--secondary); margin-right: 10px;"></i> Linux版：支持任意版本的Linux内核系统</p>
+                <p><i class="fas fa-check-circle" style="color: var(--secondary); margin-right: 10px;"></i> macOS版：支持任意版本的macOS系统</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>超高清视频传输</h2>
+                <p>革命性的Web3.0技术，重新定义视频传输体验</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3>基于Web3.0的分布式传输</h3>
+                    <p>通过去中心化的分布式网络和多节点并行传输技术，将数据分割成多个小的分界面传输，显著提高了数据传输效率。特别适用于超高清视频、游戏数据和区块链应用。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>底层二进制数据传输</h3>
+                    <p>直接传输原始二进制数据，支持各种数据类型，且兼容任何加密器和压缩算法，提供更宽的传输灵活性。安全性和效率，适应多种优化需求。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <h3>高效的视频编解码技术</h3>
+                    <p>通过高效视频编码技术H.265/HEVC，大幅降低传输数据流，减少带宽需求，支持AV1编码，传输4K、8K视频具有更高的压缩效率比。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>数据冗余</h3>
+                    <p>分布式存储通过许多块，确保在部分节点副本中获取数据，输出的数据性能稳定性。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="video-comparison">
+            <div class="container">
+                <h2>超高清效果对比</h2>
+                
+                <div class="comparison-container">
+                    <div class="video-card">
+                        <div class="video-placeholder">
+                            <img src="web2-example.jpg" alt="Web2.0视频效果">
+                            <i class="fas fa-play-circle play-icon"></i>
+                        </div>
+                        <h3>Web2.0超高清视频</h3>
+                    </div>
+                    
+                    <div class="video-card">
+                        <div class="video-placeholder">
+                            <img src="hyperfrag-example.jpg" alt="HyperFrag视频效果">
+                            <i class="fas fa-play-circle play-icon"></i>
+                        </div>
+                        <h3>HyperFrag超高清视频</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+    <section class="applications">
+        <div class="container">
+            <div class="section-title">
+                <h2>高清、超高清视频庞大的应用市场</h2>
+                <p>我们的技术解决方案适用于多个行业领域</p>
+            </div>
+            
+            <div class="applications-grid">
+                <div class="app-card">
+                    <i class="fas fa-tv"></i>
+                    <h4>广播电视</h4>
+                </div>
+                
+                <div class="app-card">
+                    <i class="fas fa-film"></i>
+                    <h4>电影制作</h4>
+                </div>
+                
+                <div class="app-card">
+                    <i class="fas fa-industry"></i>
+                    <h4>工业智能制造</h4>
+                </div>
+                
+                <div class="app-card">
+                    <i class="fas fa-hospital"></i>
+                    <h4>医疗领域</h4>
+                </div>
+                
+                <div class="app-card">
+                    <i class="fas fa-traffic-light"></i>
+                    <h4>智能交通</h4>
+                </div>
+                
+                <div class="app-card">
+                    <i class="fas fa-camera"></i>
+                    <h4>安防监控</h4>
+                </div>
+                
+                <div class="app-card">
+                    <i class="fas fa-video"></i>
+                    <h4>网络直播</h4>
+                </div>
+                
+                <div class="app-card">
+                    <i class="fas fa-gamepad"></i>
+                    <h4>文化娱乐和游戏</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <!-- 优化后的列结构 -->
+                <div class="footer-column">
+                    <h3>产品</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Windows版</a></li>
+                        <li><a href="#">macOS版</a></li>
+                        <li><a href="#">Linux版</a></li>
+                        <li><a href="#">浏览器插件</a></li>
+                        <li><a href="#">移动端(即将上线)</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>技术</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">分布式传输</a></li>
+                        <li><a href="#">二进制数据传输</a></li>
+                        <li><a href="#">视频编解码</a></li>
+                        <li><a href="#">数据冗余</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>应用领域</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">广播电视</a></li>
+                        <li><a href="#">电影制作</a></li>
+                        <li><a href="#">工业制造</a></li>
+                        <li><a href="#">医疗领域</a></li>
+                        <li><a href="#">更多...</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <div class="footer-column">
+                        <h3>法律</h3>
+                        <ul class="footer-links">
+                            <li><a href="#">隐私政策</a></li>
+                            <li><a href="#">服务条款</a></li>
+                            <li><a href="#">Cookie政策</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="copyright">
+                    <p>&copy; 2025 HyperFrag Web3浏览器系统. 保留所有权利.</p>
+                </div>
+            </div>
+        </footer>
+        
+        <!-- 在body标签中添加粒子效果 -->
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <!-- 添加更多粒子元素 -->
+        </div>
