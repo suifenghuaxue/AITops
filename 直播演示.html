@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveStream 直播平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --danger: #ef233c;
+            --danger-dark: #d90429;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --gray: #adb5bd;
+            --gray-dark: #495057;
+            --bg-color: #f5f7fa;
+            --sidebar-width: 280px;
+            --header-height: 60px;
+            --control-height: 80px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--dark);
+        }
+        
+        /* 头部导航 */
+        .header {
+            height: var(--header-height);
+            background-color: white;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            z-index: 10;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .logo-icon {
+            font-size: 24px;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+        
+        .notification {
+            position: relative;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--gray-dark);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 主容器 */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            padding: 20px 0;
+            overflow-y: auto;
+            border-right: 1px solid #eee;
+            transition: var(--transition);
+            z-index: 5;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .sidebar-menu li.active {
+            background-color: rgba(67, 97, 238, 0.1);
+            border-left: 3px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .sidebar-menu li i {
+            width: 24px;
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        /* 内容区 */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+            position: relative;
+        }
+        
+        /* 首页样式 */
+        .home-page {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+        }
+        
+        .welcome-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .welcome-subtitle {
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .room-creation {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .creation-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            width: 280px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .creation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .creation-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .creation-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .creation-desc {
+            color: var(--gray-dark);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .creation-btn {
+            padding: 8px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        
+        .creation-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .room-list {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--primary);
+        }
+        
+        .room-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .room-item:last-child {
+            border-bottom: none;
+        }
+        
+        .room-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .room-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .room-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .room-name {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .room-meta {
+            font-size: 12px;
+            color: var(--gray-dark);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .room-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+        }
+        
+        .status-indicator.inactive {
+            background-color: var(--gray);
+        }
+        
+        .room-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            font-size: 13px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .join-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .join-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .end-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .end-btn:hover {
+            background-color: var(--danger-dark);
+        }
+        
+        .watch-btn {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        /* 视频页面公共样式 */
+        .video-page {
+            height: calc(100vh - var(--header-height));
+            display: flex;
+            position: relative;
+            background-color: #1a1a1a;
+        }
+        
+        .video-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            background-color: #2a2a2a;
+        }
+        
+        .user-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+        }
+        
+        /* 视频控制栏 */
+        .video-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background-color: rgba(0,0,0,0.7);
+            padding: 12px 25px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+        
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .control-btn:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+        
+        .control-btn.active {
+            background-color: var(--primary);
+        }
+        
+        .control-btn.active:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .control-btn.danger {
+            background-color: var(--danger);
+        }
+        
+        .control-btn.danger:hover {
+            background-color: var(--danger-dark);
+        }
+        
+        .control-btn .tooltip {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+        
+        .control-btn:hover .tooltip {
+            opacity: 1;
+            top: -45px;
+        }
+        
+        /* 右侧边栏 */
+        .sidebar-right {
+            width: 350px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
+            z-index: 1;
+        }
+        
+        .sidebar-collapse {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 3;
+        }
+        
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .sidebar-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .sidebar-tab:hover {
+            color: var(--primary);
+        }
+        
+        .sidebar-tab.active {
+            color: var(--primary);
+        }
+        
+        .sidebar-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        /* 1V1视频页面 */
+        .video-call-page .remote-video {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .video-call-page .local-video {
+            position: absolute;
+            bottom: 90px;
+            right: 20px;
+            width: 20%;
+            min-width: 180px;
+            max-width: 250px;
+            aspect-ratio: 16/9;
+            background-color: #333;
+            border: 2px solid white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: var(--transition);
+            z-index: 1;
+        }
+        
+        .video-call-page .local-video:hover {
+            transform: scale(1.03);
+        }
+        
+        /* 多人会议页面 */
+        .meeting-page {
+            display: flex;
+            height: 100%;
+        }
+        
+        .meeting-page .video-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-speaker {
+            flex: 1;
+            position: relative;
+        }
+        
+        .participants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 15px;
+            background-color: #222;
+            max-height: 30%;
+            overflow-y: auto;
+        }
+        
+        .participant-video {
+            background-color: #333;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 16/9;
+        }
+        
+        .participant-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: white;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .participant-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .participant-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 10px;
+        }
+        
+        .audio-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--danger);
+        }
+        
+        .audio-indicator.active {
+            background-color: var(--success);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .participant-controls {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .participant-video:hover .participant-controls {
+            opacity: 1;
+        }
+        
+        .participant-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .participant-btn:hover {
+            background-color: rgba(0,0,0,0.8);
+            transform: scale(1.1);
+        }
+        
+        /* 聊天区域 */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            display: flex;
+            gap: 10px;
+            max-width: 80%;
+        }
+        
+        .message.remote {
+            align-self: flex-start;
+        }
+        
+        .message.local {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .message.remote .message-bubble {
+            background-color: #f0f0f0;
+            border-top-left-radius: 5px;
+        }
+        
+        .message.local .message-bubble {
+            background-color: var(--primary);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+        
+        .message-info {
+            font-size: 11px;
+            color: var(--gray-dark);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .message.local .message-info {
+            justify-content: flex-end;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        .chat-input input:focus {
+            border-color: var(--primary);
+        }
+        
+        .chat-send {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .chat-send:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+        
+        /* 直播页面 */
+        .live-page .live-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            z-index: 1;
+        }
+        
+        .live-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .live-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            z-index: 1;
+            max-width: 80%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* 观众视图 */
+        .audience-view .video-controls {
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .audience-view .control-btn {
+            background-color: transparent;
+        }
+        
+        .audience-view .control-btn:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .gift-panel {
+            display: none;
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .gift-panel.show {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translate(-50%, 20px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        
+        .gift-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+        }
+        
+        .gift-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .gift-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .gift-icon {
+            font-size: 24px;
+        }
+        
+        .gift-name {
+            font-size: 12px;
+        }
+        
+        .gift-price {
+            font-size: 12px;
+            color: var(--warning);
+            font-weight: 500;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 0;
+            }
+            
+            .sidebar-menu li span {
+                display: none;
+            }
+            
+            .sidebar-menu li {
+                justify-content: center;
+                padding: 15px 0;
+            }
+            
+            .sidebar-right {
+                width: 300px;
+            }
+            
+            .participants-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                left: -280px;
+                top: var(--header-height);
+                bottom: 0;
+                width: 280px;
+                z-index: 20;
+                box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            }
+            
+            .sidebar.show {
+                left: 0;
+            }
+            
+            .sidebar-right {
+                position: absolute;
+                right: -350px;
+                top: 0;
+                bottom: 0;
+                z-index: 15;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            }
+            
+            .sidebar-right.show {
+                right: 0;
+            }
+            
+            .creation-card {
+                width: 100%;
+            }
+            
+            .video-call-page .local-video {
+                width: 30%;
+                min-width: 120px;
+                bottom: 80px;
+            }
+            
+            .main-speaker {
+                height: 70%;
+            }
+            
+            .participants-grid {
+                height: 30%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 0 15px;
+            }
+            
+            .home-page {
+                padding: 20px 15px;
+            }
+            
+            .welcome-card {
+                padding: 20px;
+            }
+            
+            .room-creation {
+                gap: 15px;
+            }
+            
+            .video-controls {
+                gap: 10px;
+                padding: 10px 15px;
+            }
+            
+            .control-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+            
+            .video-call-page .local-video {
+                width: 35%;
+                min-width: 100px;
+                bottom: 70px;
+                right: 10px;
+            }
+            
+            .gift-panel {
+                width: 95%;
+                bottom: 80px;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* 工具类 */
+        .hidden {
+            display: none !important;
+        }
+        
+        .text-primary {
+            color: var(--primary);
+        }
+        
+        .text-danger {
+            color: var(--danger);
+        }
+        
+        .text-success {
+            color: var(--success);
+        }
+        
+        .text-warning {
+            color: var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-broadcast-tower logo-icon"></i>
+            <span>LiveStream</span>
+        </div>
+        <div class="user-menu">
+            <div class="notification">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </div>
+            <div class="user-avatar">U</div>
+        </div>
+    </div>
+    
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar" id="mainSidebar">
+            <ul class="sidebar-menu">
+                <li class="active" onclick="showHomePage()">
+                    <i class="fas fa-home"></i>
+                    <span>首页</span>
+                </li>
+                <li onclick="showCreateRoomModal()">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>创建房间</span>
+                </li>
+                <li onclick="showRoomList()">
+                    <i class="fas fa-list"></i>
+                    <span>房间列表</span>
+                </li>
+                <li>
+                    <i class="fas fa-history"></i>
+                    <span>历史记录</span>
+                </li>
+                <li>
+                    <i class="fas fa-cog"></i>
+                    <span>设置</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- 内容区 - 默认显示首页 -->
+        <div class="content">
+            <div class="home-page" id="homePage">
+                <div class="welcome-card">
+                    <h2 class="welcome-title">欢迎回来，用户</h2>
+                    <p class="welcome-subtitle">开始您的直播或加入现有会话</p>
+                    <div class="room-creation">
+                        <div class="creation-card" onclick="showVideoCallPage()">
+                            <div class="creation-icon">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <h3 class="creation-title">1V1视频对话</h3>
+                            <p class="creation-desc">与一个人进行私密视频通话</p>
+                            <button class="creation-btn">开始通话</button>
+                        </div>
+                        <div class="creation-card" onclick="showMeetingPage()">
+                            <div class="creation-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3 class="creation-title">多人视频会议</h3>
+                            <p class="creation-desc">与多人进行视频会议</p>
+                            <button class="creation-btn">创建会议</button>
+                        </div>
+                        <div class="creation-card" onclick="showLivePage()">
+                            <div class="creation-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <h3 class="creation-title">单人直播演示</h3>
+                            <p class="creation-desc">向观众进行直播演示</p>
+                            <button class="creation-btn">开始直播</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="room-list">
+                    <h2 class="section-title">
+                        <i class="fas fa-bolt"></i>
+                        <span>我的活跃房间</span>
+                    </h2>
+                    <div class="room-item">
+                        <div class="room-info">
+                            <div class="room-avatar">张</div>
+                            <div class="room-details">
+                                <div class="room-name">与张三的1V1通话</div>
+                                <div class="room-meta">
+                                    <span class="room-status">
+                                        <span class="status-indicator"></span>
+                                        <span>进行中 05:23</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="room-actions">
+                            <button class="action-btn join-btn" onclick="showVideoCallPage()">
+                                <i class="fas fa-phone-alt"></i>
+                                <span>进入</span>
+                            </button>
+                            <button class="action-btn end-btn">
+                                <i class="fas fa-times"></i>
+                                <span>结束</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="room-item">
+                        <div class="room-info">
+                            <div class="room-avatar">我</div>
+                            <div class="room-details">
+                                <div class="room-name">我的直播</div>
+                                <div class="room-meta">
+                                    <span class="room-status">
+                                        <span class="status-indicator"></span>
+                                        <span>32人观看</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="room-actions">
+                            <button class="action-btn join-btn" onclick="showLivePage()">
+                                <i class="fas fa-play"></i>
+                                <span>进入</span>
+                            </button>
+                            <button class="action-btn end-btn">
+                                <i class="fas fa-stop"></i>
+                                <span>结束</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="room-list">
+                    <h2 class="section-title">
+                        <i class="fas fa-door-open"></i>
+                        <span>可加入的房间</span>
+                    </h2>
+                    <div class="room-item">
+                        <div class="room-info">
+                            <div class="room-avatar">李</div>
+                            <div class="room-details">
+                                <div class="room-name">李四的会议室</div>
+                                <div class="room-meta">
+                                    <span>邀请码: 123456</span>
+                                    <span>4人参与</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="room-actions">
+                            <button class="action-btn join-btn" onclick="showMeetingPage()">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>加入</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="room-item">
+                        <div class="room-info">
+                            <div class="room-avatar">科</div>
+                            <div class="room-details">
+                                <div class="room-name">科技产品发布会直播</div>
+                                <div class="room-meta">
+                                    <span>公开直播</span>
+                                    <span>126人观看</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="room-actions">
+                            <button class="action-btn watch-btn" onclick="showLivePage('audience')">
+                                <i class="fas fa-eye"></i>
+                                <span>观看</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 1V1视频页面 (默认隐藏) -->
+            <div id="videoCallPage" class="video-page video-call-page hidden">
+                <div class="video-container">
+                    <div class="remote-video">
+                        <div class="video-placeholder">
+                            <div class="user-avatar-large">张</div>
+                        </div>
+                    </div>
+                    
+                    <div class="local-video">
+                        <div class="video-placeholder">
+                            <div class="user-avatar-large">我</div>
+                        </div>
+                    </div>
+                    
+                    <div class="video-controls">
+                        <button class="control-btn active" title="麦克风">
+                            <i class="fas fa-microphone"></i>
+                            <span class="tooltip">麦克风</span>
+                        </button>
+                        <button class="control-btn active" title="摄像头">
+                            <i class="fas fa-video"></i>
+                            <span class="tooltip">摄像头</span>
+                        </button>
+                        <button class="control-btn" title="屏幕共享">
+                            <i class="fas fa-desktop"></i>
+                            <span class="tooltip">屏幕共享</span>
+                        </button>
+                        <button class="control-btn" title="更多选项">
+                            <i class="fas fa-ellipsis-h"></i>
+                            <span class="tooltip">更多选项</span>
+                        </button>
+                        <button class="control-btn danger" title="挂断">
+                            <i class="fas fa-phone-slash"></i>
+                            <span class="tooltip">挂断</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="sidebar-right" id="callSidebar">
+                    <div class="sidebar-collapse" onclick="toggleSidebar('callSidebar')">
+                                <!-- 多人会议页面 (默认隐藏) -->
+        <div id="meetingPage" class="video-page meeting-page hidden">
+            <div class="video-container">
+                <div class="main-speaker">
+                    <div class="video-placeholder">
+                        <div class="user-avatar-large">李</div>
+                    </div>
+                    <div class="video-controls">
+                        <button class="control-btn active" title="麦克风">
+                            <i class="fas fa-microphone"></i>
+                            <span class="tooltip">麦克风</span>
+                        </button>
+                        <button class="control-btn" title="举手">
+                            <i class="fas fa-hand-paper"></i>
+                            <span class="tooltip">举手</span>
+                        </button>
+                        <button class="control-btn" title="屏幕共享">
+                            <i class="fas fa-desktop"></i>
+                            <span class="tooltip">屏幕共享</span>
+                        </button>
+                        <button class="control-btn danger" title="离开会议">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span class="tooltip">离开会议</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="participants-grid">
+                    <div class="participant-video">
+                        <div class="video-placeholder">
+                            <div class="user-avatar-large">王</div>
+                        </div>
+                        <div class="participant-info">
+                            <span class="participant-name">王五</span>
+                            <span class="participant-status">
+                                <span class="audio-indicator active"></span>
+                            </span>
+                        </div>
+                        <div class="participant-controls">
+                            <button class="participant-btn" title="静音">
+                                <i class="fas fa-microphone-slash"></i>
+                            </button>
+                            <button class="participant-btn" title="设为焦点">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="participant-video">
+                        <div class="video-placeholder">
+                            <div class="user-avatar-large">赵</div>
+                        </div>
+                        <div class="participant-info">
+                            <span class="participant-name">赵六</span>
+                            <span class="participant-status">
+                                <span class="audio-indicator"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="participant-video">
+                        <div class="video-placeholder">
+                            <div class="user-avatar-large">钱</div>
+                        </div>
+                        <div class="participant-info">
+                            <span class="participant-name">钱七 (正在发言)</span>
+                            <span class="participant-status">
+                                <span class="audio-indicator active"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="participant-video">
+                        <div class="video-placeholder">
+                            <div class="user-avatar-large">我</div>
+                        </div>
+                        <div class="participant-info">
+                            <span class="participant-name">我</span>
+                            <span class="participant-status">
+                                <span class="audio-indicator"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-right" id="meetingSidebar">
+                <div class="sidebar-collapse" onclick="toggleSidebar('meetingSidebar')">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="sidebar-tabs">
+                    <div class="sidebar-tab active" onclick="switchTab('participants-tab')">参与者(5)</div>
+                    <div class="sidebar-tab" onclick="switchTab('meeting-chat-tab')">聊天</div>
+                    <div class="sidebar-tab" onclick="switchTab('meeting-settings-tab')">设置</div>
+                </div>
+                <div class="sidebar-content">
+                    <div id="participants-tab">
+                        <div class="participant-item">
+                            <div class="room-info">
+                                <div class="room-avatar">李</div>
+                                <div class="room-details">
+                                    <div class="room-name">李四 (主持人)</div>
+                                </div>
+                            </div>
+                            <button class="participant-btn">
+                                <i class="fas fa-microphone-slash"></i>
+                            </button>
+                        </div>
+                        <div class="participant-item">
+                            <div class="room-info">
+                                <div class="room-avatar">王</div>
+                                <div class="room-details">
+                                    <div class="room-name">王五</div>
+                                </div>
+                            </div>
+                            <button class="participant-btn">
+                                <i class="fas fa-microphone-slash"></i>
+                            </button>
+                        </div>
+                        <div class="participant-item">
+                            <div class="room-info">
+                                <div class="room-avatar">赵</div>
+                                <div class="room-details">
+                                    <div class="room-name">赵六</div>
+                                </div>
+                            </div>
+                            <button class="participant-btn">
+                                <i class="fas fa-microphone-slash"></i>
+                            </button>
+                        </div>
+                        <div class="participant-item">
+                            <div class="room-info">
+                                <div class="room-avatar">钱</div>
+                                <div class="room-details">
+                                    <div class="room-name">钱七 (正在发言)</div>
+                                </div>
+                            </div>
+                            <button class="participant-btn">
+                                <i class="fas fa-microphone-slash"></i>
+                            </button>
+                        </div>
+                        <div class="participant-item">
+                            <div class="room-info">
+                                <div class="room-avatar">我</div>
+                                <div class="room-details">
+                                    <div class="room-name">我</div>
+                                </div>
+                            </div>
+                            <span class="text-gray">已静音</span>
+                        </div>
+                    </div>
+                    <div id="meeting-chat-tab" class="hidden">
+                        <p>会议聊天区域</p>
+                    </div>
+                    <div id="meeting-settings-tab" class="hidden">
+                        <p>会议设置选项</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 单人直播页面 (默认隐藏) -->
+        <div id="livePage" class="video-page live-page hidden">
+            <div class="video-container">
+                <div class="live-video">
+                    <div class="live-info">
+                        <div class="live-info-item">
+                            <i class="fas fa-users"></i>
+                            <span>126人观看</span>
+                        </div>
+                        <div class="live-info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>12:45</span>
+                        </div>
+                        <div class="live-info-item">
+                            <i class="fas fa-signal"></i>
+                            <span>良好</span>
+                        </div>
+                    </div>
+                    <div class="live-title">科技产品发布会直播</div>
+                    
+                    <div class="video-placeholder">
+                        <div class="user-avatar-large">我</div>
+                    </div>
+                    
+                    <div class="video-controls">
+                        <button class="control-btn active" title="麦克风">
+                            <i class="fas fa-microphone"></i>
+                            <span class="tooltip">麦克风</span>
+                        </button>
+                        <button class="control-btn active" title="摄像头">
+                            <i class="fas fa-video"></i>
+                            <span class="tooltip">摄像头</span>
+                        </button>
+                        <button class="control-btn" title="邀请嘉宾">
+                            <i class="fas fa-user-plus"></i>
+                            <span class="tooltip">邀请嘉宾</span>
+                        </button>
+                        <button class="control-btn" title="屏幕共享">
+                            <i class="fas fa-desktop"></i>
+                            <span class="tooltip">屏幕共享</span>
+                        </button>
+                        <button class="control-btn danger" title="结束直播">
+                            <i class="fas fa-stop"></i>
+                            <span class="tooltip">结束直播</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-right" id="liveSidebar">
+                <div class="sidebar-collapse" onclick="toggleSidebar('liveSidebar')">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="sidebar-tabs">
+                    <div class="sidebar-tab active" onclick="switchTab('audience-tab')">观众(126)</div>
+                    <div class="sidebar-tab" onclick="switchTab('live-chat-tab')">聊天</div>
+                    <div class="sidebar-tab" onclick="switchTab('live-stats-tab')">数据</div>
+                </div>
+                <div class="sidebar-content">
+                    <div id="audience-tab">
+                        <p>观众列表区域</p>
+                    </div>
+                    <div id="live-chat-tab" class="hidden">
+                        <div class="chat-messages">
+                            <div class="message remote">
+                                <div class="message-avatar">李</div>
+                                <div class="message-content">
+                                    <div class="message-bubble">这个产品什么时候发布？</div>
+                                    <div class="message-info">
+                                        <span>李四</span>
+                                        <span>10:25</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="message remote">
+                                <div class="message-avatar">王</div>
+                                <div class="message-content">
+                                    <div class="message-bubble">画质很清晰！</div>
+                                    <div class="message-info">
+                                        <span>王五</span>
+                                        <span>10:26</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="message system">
+                                <div class="message-content">
+                                    <div class="message-bubble">赵六送了礼物 🎁</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" placeholder="输入消息...">
+                            <button class="chat-send">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="live-stats-tab" class="hidden">
+                        <p>直播数据统计</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 观众视角直播页面 (默认隐藏) -->
+        <div id="audienceLivePage" class="video-page live-page audience-view hidden">
+            <div class="video-container">
+                <div class="live-video">
+                    <div class="live-title">科技产品发布会直播</div>
+                    
+                    <div class="video-placeholder">
+                        <div class="user-avatar-large">主</div>
+                    </div>
+                    
+                    <div class="video-controls">
+                        <button class="control-btn" title="点赞">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span class="tooltip">点赞</span>
+                        </button>
+                        <button class="control-btn" title="送礼物" onclick="showGiftPanel()">
+                            <i class="fas fa-gift"></i>
+                            <span class="tooltip">送礼物</span>
+                        </button>
+                        <button class="control-btn" title="申请连麦">
+                            <i class="fas fa-microphone"></i>
+                            <span class="tooltip">申请连麦</span>
+                        </button>
+                        <button class="control-btn" title="全屏">
+                            <i class="fas fa-expand"></i>
+                            <span class="tooltip">全屏</span>
+                        </button>
+                        <button class="control-btn danger" title="退出">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span class="tooltip">退出</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="gift-panel" id="giftPanel">
+                    <div class="gift-title">选择礼物</div>
+                    <div class="gift-grid">
+                        <div class="gift-item">
+                            <div class="gift-icon">🌹</div>
+                            <div class="gift-name">玫瑰</div>
+                            <div class="gift-price">10金币</div>
+                        </div>
+                        <div class="gift-item">
+                            <div class="gift-icon">🎁</div>
+                            <div class="gift-name">礼物盒</div>
+                            <div class="gift-price">50金币</div>
+                        </div>
+                        <div class="gift-item">
+                            <div class="gift-icon">🏆</div>
+                            <div class="gift-name">奖杯</div>
+                            <div class="gift-price">100金币</div>
+                        </div>
+                        <div class="gift-item">
+                            <div class="gift-icon">🚀</div>
+                            <div class="gift-name">火箭</div>
+                            <div class="gift-price">500金币</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-right" id="audienceSidebar">
+                <div class="sidebar-collapse" onclick="toggleSidebar('audienceSidebar')">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="sidebar-tabs">
+                    <div class="sidebar-tab active" onclick="switchTab('audience-list-tab')">观众(126)</div>
+                    <div class="sidebar-tab" onclick="switchTab('audience-chat-tab')">聊天</div>
+                    <div class="sidebar-tab" onclick="switchTab('audience-info-tab')">信息</div>
+                </div>
+                <div class="sidebar-content">
+                    <div id="audience-list-tab">
+                        <p>观众列表区域</p>
+                    </div>
+                    <div id="audience-chat-tab" class="hidden">
+                        <div class="chat-messages">
+                            <div class="message remote">
+                                <div class="message-avatar">李</div>
+                                <div class="message-content">
+                                    <div class="message-bubble">这个产品什么时候发布？</div>
+                                    <div class="message-info">
+                                        <span>李四</span>
+                                        <span>10:25</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="message remote">
+                                <div class="message-avatar">王</div>
+                                <div class="message-content">
+                                    <div class="message-bubble">画质很清晰！</div>
+                                    <div class="message-info">
+                                        <span>王五</span>
+                                        <span>10:26</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="message local">
+                                <div class="message-avatar">我</div>
+                                <div class="message-content">
+                                    <div class="message-bubble">请问有详细参数吗？</div>
+                                    <div class="message-info">
+                                        <span>我</span>
+                                        <span>10:27</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" placeholder="输入消息..." id="audienceChatInput">
+                            <button class="chat-send" onclick="sendAudienceMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="audience-info-tab" class="hidden">
+                        <p>主播: 科技产品发布会</p>
+                        <p>在线人数: 126</p>
+                        <p>开始时间: 10:00 AM</p>
+                        <p>直播时长: 45分钟</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 创建房间模态框 -->
+<div class="modal hidden" id="createRoomModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>创建新房间</h3>
+            <button class="modal-close" onclick="hideModal('createRoomModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>房间类型</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="roomType" value="1v1" checked>
+                        <span>1V1视频对话</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="roomType" value="meeting">
+                        <span>多人视频会议</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="roomType" value="live">
+                        <span>单人直播</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="roomName">房间名称</label>
+                <input type="text" id="roomName" placeholder="输入房间名称">
+            </div>
+            <div class="form-group">
+                <label for="roomPrivacy">隐私设置</label>
+                <select id="roomPrivacy">
+                    <option value="public">公开房间</option>
+                    <option value="private">私密房间 (需要密码)</option>
+                    <option value="invite">仅限邀请</option>
+                </select>
+            </div>
+            <div class="form-group hidden" id="passwordGroup">
+                <label for="roomPassword">房间密码</label>
+                <input type="password" id="roomPassword" placeholder="设置房间密码">
+            </div>
+            <div class="form-group hidden" id="maxParticipantsGroup">
+                <label for="maxParticipants">最大人数</label>
+                <input type="number" id="maxParticipants" min="2" max="20" value="9">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="hideModal('createRoomModal')">取消</button>
+            <button class="btn btn-primary" onclick="createRoom()">创建</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 页面切换功能
+    function showHomePage() {
+        document.getElementById('homePage').classList.remove('hidden');
+        document.getElementById('videoCallPage').classList.add('hidden');
+        document.getElementById('meetingPage').classList.add('hidden');
+        document.getElementById('livePage').classList.add('hidden');
+        document.getElementById('audienceLivePage').classList.add('hidden');
+        
+        // 更新侧边栏活动状态
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelectorAll('.sidebar-menu li')[0].classList.add('active');
+    }
+    
+    function showVideoCallPage() {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('videoCallPage').classList.remove('hidden');
+        document.getElementById('meetingPage').classList.add('hidden');
+        document.getElementById('livePage').classList.add('hidden');
+        document.getElementById('audienceLivePage').classList.add('hidden');
+        
+        // 模拟视频通话初始化
+        simulateVideoCall();
+    }
+    
+    function showMeetingPage() {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('videoCallPage').classList.add('hidden');
+        document.getElementById('meetingPage').classList.remove('hidden');
+        document.getElementById('livePage').classList.add('hidden');
+        document.getElementById('audienceLivePage').classList.add('hidden');
+        
+        // 模拟会议初始化
+        simulateMeeting();
+    }
+    
+    function showLivePage(mode = 'host') {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('videoCallPage').classList.add('hidden');
+        document.getElementById('meetingPage').classList.add('hidden');
+        
+        if (mode === 'host') {
+            document.getElementById('livePage').classList.remove('hidden');
+            document.getElementById('audienceLivePage').classList.add('hidden');
+            
+            // 模拟直播初始化
+            simulateLiveStream();
+        } else {
+            document.getElementById('livePage').classList.add('hidden');
+            document.getElementById('audienceLivePage').classList.remove('hidden');
+            
+            // 模拟观众体验
+            simulateAudienceView();
+        }
+    }
+    
+    // 模拟功能
+    function simulateVideoCall() {
+        console.log("模拟1V1视频通话初始化");
+        // 这里可以添加更复杂的模拟逻辑
+    }
+    
+    function simulateMeeting() {
+        console.log("模拟多人会议初始化");
+        // 这里可以添加更复杂的模拟逻辑
+    }
+    
+    function simulateLiveStream() {
+        console.log("模拟直播初始化");
+        // 这里可以添加更复杂的模拟逻辑
+    }
+    
+    function simulateAudienceView() {
+        console.log("模拟观众视角");
+        // 这里可以添加更复杂的模拟逻辑
+    }
+    
+    // 侧边栏切换
+    function toggleSidebar(sidebarId) {
+        const sidebar = document.getElementById(sidebarId);
+        sidebar.classList.toggle('show');
+    }
+    
+    // 标签切换
+    function switchTab(tabId) {
+        const container = document.querySelector(`#${tabId}`).parentElement;
+        container.querySelectorAll('> div').forEach(tab => {
+            tab.classList.add('hidden');
+        });
+        document.getElementById(tabId).classList.remove('hidden');
+        
+        // 更新活动标签
+        const tabs = container.previousElementSibling.querySelectorAll('.sidebar-tab');
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+    }
+    
+    // 礼物面板控制
+    function showGiftPanel() {
+        const panel = document.getElementById('giftPanel');
+        panel.classList.add('show');
+        
+        // 点击外部关闭
+        setTimeout(() => {
+            document.addEventListener('click', function closePanel(e) {
+                if (!panel.contains(e.target) {
+                    panel.classList.remove('show');
+                    document.removeEventListener('click', closePanel);
+                }
+            });
+        }, 10);
+    }
+    
+    // 发送观众消息
+    function sendAudienceMessage() {
+        const input = document.getElementById('audienceChatInput');
+        const message = input.value.trim();
+        if (message) {
+            const chatContainer = document.querySelector('#audience-chat-tab .chat-messages');
+            const newMessage = document.createElement('div');
+            newMessage.className = 'message local';
+            newMessage.innerHTML = `
+                <div class="message-avatar">我</div>
+                <div class="message-content">
+                    <div class="message-bubble">${message}</div>
+                    <div class="message-info">
+                        <span>我</span>
+                        <span>刚刚</span>
+                    </div>
+                </div>
+            `;
+            chatContainer.appendChild(newMessage);
+            input.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    }
+    
+    // 控制按钮交互
+    document.querySelectorAll('.control-btn:not(.danger)').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (this.classList.contains('active')) {
+                this.classList.remove('active');
+                this.style.backgroundColor = '';
+            } else {
+                this.classList.add('active');
+                if (!this.classList.contains('danger')) {
+                    this.style.backgroundColor = 'var(--primary)';
+                }
+            }
+        });
+    });
+    
+    // 危险按钮交互
+    document.querySelectorAll('.control-btn.danger').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (confirm('确定要结束当前会话吗？')) {
+                showHomePage();
+            }
+        });
+    });
+    
+    // 模态框控制
+    function showCreateRoomModal() {
+        document.getElementById('createRoomModal').classList.remove('hidden');
+    }
+    
+    function hideModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+    
+    // 房间类型切换
+    document.querySelectorAll('input[name="roomType"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const passwordGroup = document.getElementById('passwordGroup');
+            const maxGroup = document.getElementById('maxParticipantsGroup');
+            
+            if (this.value === 'meeting') {
+                maxGroup.classList.remove('hidden');
+            } else {
+                maxGroup.classList.add('hidden');
+            }
+        });
+    });
+    
+    // 隐私设置切换
+    document.getElementById('roomPrivacy').addEventListener('change', function() {
+        const passwordGroup = document.getElementById('passwordGroup');
+        passwordGroup.classList.toggle('hidden', this.value !== 'private');
+    });
+    
+    // 创建房间
+    function createRoom() {
+        const roomType = document.querySelector('input[name="roomType"]:checked').value;
+        const roomName = document.getElementById('roomName').value || '未命名房间';
+        
+        alert(`创建成功: ${roomName} (${roomType})`);
+        hideModal('createRoomModal');
+        
+        // 根据类型跳转到对应页面
+        if (roomType === '1v1') {
+            showVideoCallPage();
+        } else if (roomType === 'meeting') {
+            showMeetingPage();
+        } else {
+            showLivePage();
+        }
+    }
+    
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        // 回车发送消息
+        document.getElementById('audienceChatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendAudienceMessage();
+            }
+        });
+        
+        // 模拟一些初始数据
+        setTimeout(() => {
+            const chatContainer = document.querySelector('#chat-tab .chat-messages');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 100);
+    });
+</script>
