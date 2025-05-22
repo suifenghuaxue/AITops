@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidGenAI - 下一代AI视频创作平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏 */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        header.scrolled {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+            position: relative;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-links a i {
+            margin-right: 8px;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        .auth-buttons .btn {
+            margin-left: 15px;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background-color: #3a86ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 149, 239, 0.3);
+        }
+        
+        /* 英雄区域 */
+        .hero {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 100px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1574717024453-3545e7cc3bfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;
+            clip-path: polygon(20% 0%, 100% 0, 100% 100%, 0% 100%);
+        }
+        
+        .hero-content {
+            max-width: 600px;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            color: var(--dark);
+        }
+        
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: var(--gray);
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .hero-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .hero-feature i {
+            color: var(--primary);
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        /* 功能展示部分 */
+        .features {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-header h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .section-header p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 18px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px 30px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        
+        .feature-card:hover .feature-icon {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .feature-card:hover h3,
+        .feature-card:hover p {
+            color: white;
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+        }
+        
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--dark);
+            transition: color 0.3s;
+        }
+        
+        .feature-card p {
+            color: var(--gray);
+            transition: color 0.3s;
+        }
+        
+        /* AI视频生成器展示 */
+        .ai-generator {
+            padding: 100px 0;
+            background-color: #f1f3f5;
+        }
+        
+        .generator-container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        
+        .generator-content {
+            flex: 1;
+        }
+        
+        .generator-demo {
+            flex: 1;
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .generator-demo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            opacity: 0.05;
+            z-index: 0;
+        }
+        
+        .demo-placeholder {
+            height: 300px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .input-method {
+            margin-top: 30px;
+        }
+        
+        .input-method h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .method-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .method-btn {
+            padding: 10px 15px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 50px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .method-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .method-btn:hover {
+            border-color: var(--primary);
+        }
+        
+        /* 视频增强技术 */
+        .video-enhance {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .enhance-container {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+        }
+        
+        .enhance-comparison {
+            flex: 1;
+            position: relative;
+        }
+        
+        .comparison-slider {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comparison-slider img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .comparison-before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .comparison-handle {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: white;
+            cursor: ew-resize;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        
+        .comparison-handle::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .comparison-handle i {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary);
+            font-size: 18px;
+        }
+        
+        .enhance-features {
+            flex: 1;
+        }
+        
+        .enhance-feature {
+            display: flex;
+            margin-bottom: 30px;
+        }
+        
+        .enhance-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary);
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .enhance-text h4 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .enhance-text p {
+            color: var(--gray);
+        }
+        
+        /* 应用场景 */
+        .use-cases {
+            padding: 100px 0;
+            background-color: #f8f9fa;
+        }
+        
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .case-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .case-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .case-image {
+            height: 200px;
+            background-color: #e9ecef;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .case-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .case-card:hover .case-image img {
+            transform: scale(1.1);
+        }
+        
+        .case-content {
+            padding: 25px;
+        }
+        
+        .case-content h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .case-content p {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        
+        .case-link {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .case-link i {
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+        
+        .case-card:hover .case-link i {
+            transform: translateX(5px);
+        }
+        
+        /* 定价部分 */
+        .pricing {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .pricing-card {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px 30px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pricing-card.popular {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            transform: translateY(-20px);
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.3);
+        }
+        
+        .pricing-card.popular .price,
+        .pricing-card.popular .period,
+        .pricing-card.popular .feature-item,
+        .pricing-card.popular .feature-item i {
+            color: white;
+        }
+        
+        .pricing-card.popular .btn {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .pricing-card.popular .popular-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            color: var(--primary);
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pricing-header {
+            margin-bottom: 30px;
+        }
+        
+        .pricing-header h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        
+        .price {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .period {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .pricing-features {
+            margin-bottom: 30px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .feature-item i {
+            color: var(--success);
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        /* CTA部分 */
+        .cta {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            max-width: 700px;
+            margin: 0 auto 40px;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .cta .btn {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .cta .btn-outline {
+            background-color: transparent;
+            color: white;
+            border-color: white;
+        }
+        
+        .cta .btn-outline:hover {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        /* 页脚 */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 80px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .footer-about p {
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links h4 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+            text-align: center;
+            opacity: 0.7;
+            font-size: 14px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .hero::before {
+                width: 40%;
+                clip-path: polygon(30% 0%, 100% 0, 100% 100%, 0% 100%);
+                opacity: 0.3;
+            }
+            
+            .generator-container,
+            .enhance-container {
+                flex-direction: column;
+            }
+            
+            .pricing-card.popular {
+                transform: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links,
+            .auth-buttons {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero::before {
+                display: none;
+            }
+            
+            .hero-content {
+                text-align: center;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+            }
+            
+            .hero-features {
+                justify-content: center;
+            }
+            
+            .section-header h2 {
+                font-size: 30px;
+            }
+            
+            .price {
+                font-size: 36px;
+            }
+            
+            .cta h2 {
+                font-size: 30px;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .cta .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header id="header">
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <i class="fas fa-play-circle"></i>
+                    <span>VidGenAI</span>
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="#"><i class="fas fa-home"></i> 首页</a></li>
+                    <li><a href="#features"><i class="fas fa-star"></i> 功能</a></li>
+                    <li><a href="#generator"><i class="fas fa-magic"></i> AI生成</a></li>
+                    <li><a href="#enhance"><i class="fas fa-cogs"></i> 视频增强</a></li>
+                    <li><a href="#cases"><i class="fas fa-briefcase"></i> 应用场景</a></li>
+                    <li><a href="#pricing"><i class="fas fa-tag"></i> 定价</a></li>
+                </ul>
+                
+                <div class="auth-buttons">
+                    <a href="#" class="btn btn-outline">登录</a>
+                    <a href="#" class="btn btn-primary">免费试用</a>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- 英雄区域 -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>用AI创造惊艳视频内容</h1>
+                <p>VidGenAI利用最先进的人工智能技术，让每个人都能轻松制作专业级视频内容。无需复杂编辑，只需简单描述，AI帮你完成一切。</p>
+                
+                <div class="hero-buttons">
+                    <a href="#" class="btn btn-primary">立即体验</a>
+                    <a href="#" class="btn btn-outline">观看演示</a>
+                </div>
+                
+                <div class="hero-features">
+                    <div class="hero-feature">
+                        <i class="fas fa-bolt"></i>
+                        <span>快速生成</span>
+                    </div>
+                    <div class="hero-feature">
+                        <i class="fas fa-palette"></i>
+                        <span>多种风格</span>
+                    </div>
+                    <div class="hero-feature">
+                        <i class="fas fa-language"></i>
+                        <span>多语言支持</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 功能展示 -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>强大的AI视频创作功能</h2>
+                <p>VidGenAI整合了最先进的AI技术，为您提供全方位的视频创作解决方案</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI视频生成</h3>
+                    <p>通过简单的文字描述或图片输入，AI自动生成高质量视频内容，支持多种风格和场景。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cut"></i>
+                    </div>
+                    <h3>智能视频编辑</h3>
+                    <p>AI自动分析视频内容，智能剪辑、添加转场和特效，让您的视频更加专业流畅。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <h3>AI配音与字幕</h3>
+                    <p>支持多种语言的AI语音合成，自动生成精准字幕，大大提升视频制作效率。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                    <h3>超分辨率增强</h3>
+                    <p>将低分辨率视频提升至4K/8K画质，AI智能修复细节，让老旧视频焕发新生。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3>风格转换</h3>
+                    <p>一键应用不同艺术风格，将普通视频转换为卡通、油画、水彩等多种艺术效果。</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h3>云端协作</h3>
+                    <p>团队成员可以实时协作编辑视频项目，所有更改自动同步，提升团队工作效率。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- AI视频生成器 -->
+    <section class="ai-generator" id="generator">
+        <div class="container">
+            <div class="generator-container">
+                <div class="generator-content">
+                    <h2>AI视频生成器</h2>
+                    <p>只需简单描述您想要的视频内容，我们的AI将在几分钟内生成高质量视频。支持多种输入方式和自定义参数调整。</p>
+                    
+                    <div class="input-method">
+                        <h4>选择输入方式:</h4>
+                        <div class="method-buttons">
+                            <div class="method-btn active">文字描述</div>
+                            <div class="method-btn">图片上传</div>
+                            <div class="method-btn">音频文件</div>
+                            <div class="method-btn">脚本导入</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-method" style="margin-top: 20px;">
+                        <h4>选择视频风格:</h4>
+                        <div class="method-buttons">
+                            <div class="method-btn active">真实风格</div>
+                            <div class="method-btn">卡通动画</div>
+                            <div class="method-btn">电影质感</div>
+                            <div class="method-btn">3D渲染</div>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="btn btn-primary" style="margin-top: 30px;">立即生成视频</a>
+                </div>
+                
+                <div class="generator-demo">
+                    <div class="demo-placeholder">
+                        <i class="fas fa-play-circle" style="font-size: 50px; color: var(--primary);"></i>
+                    </div>
+                    <div class="demo-controls">
+                        <input type="text" placeholder="输入视频描述..." style="flex:1; padding:12px; border-radius:50px; border:1px solid #dee2e6;">
+                        <button class="btn btn-accent">生成</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 视频增强技术 -->
+    <section class="video-enhance" id="enhance">
+        <div class="container">
+            <div class="enhance-container">
+                <div class="enhance-comparison">
+                    <div class="comparison-slider">
+                        <img src="https://images.unsplash.com/photo-1574717024453-3545e7cc3bfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="After">
+                        <div class="comparison-before">
+                            <img src="https://images.unsplash.com/photo-1574717024453-3545e7cc3bfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80&blur=5" alt="Before">
+                        </div>
+                        <div class="comparison-handle">
+                            <i class="fas fa-arrows-alt-h"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="enhance-features">
+                    <h2>AI视频增强技术</h2>
+                    <p style="margin-bottom:30px; color:var(--gray);">我们的AI技术可以显著提升视频质量，让普通视频达到专业水准。</p>
+                    
+                    <div class="enhance-feature">
+                        <div class="enhance-icon">
+                            <i class="fas fa-search-plus"></i>
+                        </div>
+                        <div class="enhance-text">
+                            <h4>超分辨率提升</h4>
+                            <p>将480p/720p视频提升至4K甚至8K分辨率，AI智能填充细节，使画面更加清晰锐利。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="enhance-feature">
+                        <div class="enhance-icon">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <div class="enhance-text">
+                            <h4>降噪与稳定</h4>
+                            <p>消除视频中的噪点和抖动，使画面更加平滑稳定，提升观看体验。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="enhance-feature">
+                        <div class="enhance-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div class="enhance-text">
+                            <h4>色彩校正</h4>
+                            <p>自动调整视频色彩平衡、对比度和饱和度，使画面更加生动自然。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 应用场景 -->
+    <section class="use-cases" id="cases">
+        <div class="container">
+            <div class="section-header">
+                <h2>应用场景</h2>
+                <p>VidGenAI适用于各种行业和用途，帮助您轻松创建专业视频内容</p>
+            </div>
+            
+            <div class="cases-grid">
+                <div class="case-card">
+                    <div class="case-image">
+                        <img src="https://images.unsplash.com/photo-1571772996211-2f02c9727629?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="短视频创作">
+                    </div>
+                    <div class="case-content">
+                        <h3>短视频创作</h3>
+                        <p>快速生成适合社交媒体平台的短视频内容，提升用户参与度和传播效果。</p>
+                        <a href="#" class="case-link">了解更多 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <div class="case-card">
+                    <div class="case-image">
+                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="电商视频">
+                    </div>
+                    <div class="case-content">
+                        <h3>电商产品展示</h3>
+                        <p>为商品自动生成高质量展示视频，提升转化率和客户购买欲望。</p>
+                        <a href="#" class="case-link">了解更多 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <div class="case-card">
+                    <div class="case-image">
+                        <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="教育培训">
+                    </div>
+                    <div class="case-content">
+                        <h3>教育培训</h3>
+                        <p>将课件和教材转换为生动视频内容，提高学习效果和知识保留率。</p>
+                        <a href="#" class="case-link">了解更多 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <div class="case-card">
+                    <div class="case-image">
+                        <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="企业宣传">
+                    </div>
+                    <div class="case-content">
+                        <h3>企业宣传</h3>
+                        <p>快速制作专业的企业介绍、产品宣传和品牌故事视频，提升企业形象。</p>
+                        <a href="#" class="case-link">了解更多 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 定价部分 -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-header">
+                <h2>简单透明的定价</h2>
+                <p>选择适合您需求的方案，所有计划都包含免费试用期</p>
+            </div>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>基础版</h3>
+                        <div class="price">¥99</div>
+                        <div class="period">/月</div>
+                    </div>
+                    <div class="pricing-features">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>每月10个视频生成</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>720p分辨率</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>5种视频风格</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>基础编辑工具</span>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-outline">开始试用</a>
+                </div>
+                
+                <div class="pricing-card popular">
+                    <div class="popular-badge">最受欢迎</div>
+                    <div class="pricing-header">
+                        <h3>专业版</h3>
+                        <div class="price">¥299</div>
+                        <div class="period">/月</div>
+                    </div>
+                    <div class="pricing-features">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>每月50个视频生成</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>4K分辨率</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>20+视频风格</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>高级编辑工具</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>视频增强功能</span>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-primary">开始试用</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>企业版</h3>
+                        <div class="price">定制</div>
+                        <div class="period">按需定价</div>
+                    </div>
+                    <div class="pricing-features">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>无限视频生成</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>8K分辨率</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>所有视频风格</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>专业编辑工具</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>API访问</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>专属客户经理</span>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-outline">联系我们</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA部分 -->
+    <section class="cta">
+        <div class="container">
+            <h2>准备好开始您的AI视频创作之旅了吗？</h2>
+            <p>立即注册，获得7天免费试用，体验最先进的AI视频生成技术</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn">免费试用</a>
+                <a href="#" class="btn btn-outline">预约演示</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <a href="#" class="footer-logo">
+                        <i class="fas fa-play-circle"></i>
+                        VidGenAI
+                    </a>
+                    <p>最先进的AI视频创作平台，让每个人都能轻松制作专业级视频内容。</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-weixin"></i></a>
+                        <a href="#"><i class="fab fa-weibo"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>产品</h4>
+                    <ul>
+                        <li><a href="#">功能</a></li>
+                        <li><a href="#">定价</a></li>
+                        <li><a href="#">案例展示</a></li>
+                        <li><a href="#">更新日志</a></li>
+                        <li><a href="#">API文档</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>资源</h4>
+                    <ul>
+                        <li><a href="#">帮助中心</a></li>
+                        <li><a href="#">教程视频</a></li>
+                        <li><a href="#">博客</a></li>
+                        <li><a href="#">模板库</a></li>
+                        <li><a href="#">开发者资源</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>公司</h4>
+                    <ul>
+                        <li><a href="#">关于我们</a></li>
+                        <li><a href="#">团队</a></li>
+                        <li><a href="#">工作机会</a></li>
+                        <li><a href="#">合作伙伴</a></li>
+                        <li><a href="#">联系我们</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>法律</h4>
+                    <ul>
+                        <li><a href="#">隐私政策</a></li>
+                        <li><a href="#">服务条款</a></li>
+                        <li><a href="#">Cookie政策</a></li>
+                        <li><a href="#">GDPR</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 VidGenAI. 保留所有权利。京ICP备12345678号</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // 滚动时导航栏效果
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // 视频对比滑块功能
+        const slider = document.querySelector('.comparison-slider');
+        const before = document.querySelector('.comparison-before');
+        const handle = document.querySelector('.comparison-handle');
+        
+        let isDragging = false;
+        
+        handle.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            document.body.style.cursor = 'ew-resize';
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            
+            const sliderRect = slider.getBoundingClientRect();
+            let x = e.clientX - sliderRect.left;
+            
+            // 限制在滑块范围内
+            x = Math.max(0, Math.min(x, sliderRect.width));
+            
+            const percent = (x / sliderRect.width) * 100;
+            before.style.width = percent + '%';
+            handle.style.left = percent + '%';
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            document.body.style.cursor = '';
+        });
+        
+        // 移动端触摸支持
+        handle.addEventListener('touchstart', function(e) {
+            isDragging = true;
+            e.preventDefault();
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            if (!isDragging) return;
+            
+            const sliderRect = slider.getBoundingClientRect();
+            let x = e.touches[0].clientX - sliderRect.left;
+            
+            x = Math.max(0, Math.min(x, sliderRect.width));
+            
+            const percent = (x / sliderRect.width) * 100;
+            before.style.width = percent + '%';
+            handle.style.left = percent + '%';
+            
+            e.preventDefault();
+        }, { passive: false });
+        
+        document.addEventListener('touchend', function() {
+            isDragging = false;
+        });
+        
+        // 输入方式切换
+        const methodBtns = document.querySelectorAll('.method-btn');
+        methodBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                methodBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+    </body>
+    </html>
